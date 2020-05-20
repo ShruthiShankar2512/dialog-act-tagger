@@ -1,0 +1,124 @@
+Assignment 2 Report
+
+Name: Shruthi Shankar
+Student ID: 2112880883
+Email: shruthis@usc.edu
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+1. Describe how you evaluated your baseline and advanced features:
+
+  Method1:
+  To evaluate the model, I first moved the last 20% of the data to a different folder
+  called "test", and measure the accuracy on that data after training the
+  CRF model on the first 80%.
+
+  Method2:
+  After this, i also performed KFold cross validation with k=5, and
+  checked the array of 5 accuracies that was returned.
+
+  I will mention both these methods' results in this report.
+
+  The accuracies were calculated using sklearn's accuracy calculator. In the code submitted, those lines have been commented out.
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+2. Accuracy of baseline features during your evaluation:
+
+  a). When the tokens are converted to lower case, and then added to the feature list.
+        Accuracy from method1: 0.70988035324280
+        Accuracy from method2: [0.7168760129659644, 0.715891907711819, 0.729852387302033, 0.721474358974359, 0.7165479990179229]
+
+  b). When the tokens are not converted to lower case, and are added as they are directly to the feature list.
+        Accuracy from method1: 0.7186876839806287
+        Accuracy from method2: [0.7213223140495868, 0.7268849518916167, 0.7265694877559408, 0.7208483158435459, 0.7151406808642935]
+
+  The baseline model gave a better performance when the tokens were not lowercased.
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+3. Describe your advanced feature set:
+
+  The advanced feature set has all the 4 features from the original baseline
+  tagger's feature set -
+      i). whether it's the first utterance or not
+      ii). whether the speaker has changed
+      iii). The POS tags of the words
+      iv). The tokens itself.
+
+    In addition to these, the following features were added:
+      i). If the speaker has not changed or is the same
+      ii). The length of the utterance in a string format
+      iii). Whether that utterance is a question or not
+      iv). If it is the last utterance.
+      v). Whether the utterance contains a Mumble or any incoherent text.
+
+    Accuracy from method1: 0.7256433387142721
+    Accuracy from method2: [0.7356795476869266, 0.729566596444718, 0.7389844233792217, 0.7385379458824681, 0.7310623472769942]
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+4. If you tried and rejected alternate advanced feature sets, please describe them:
+    Multiple experiments were performed with various features sets.
+    Some of the features which gave slightly better results than the
+    baseline tagger are highlighted below.
+
+    Different feature sets for the advanced tagger:
+
+    a). Same 4 features as the baseline tagger + the previous utterance's
+        features for all the utterances except the first utterance of
+        the dialog.
+        The prefix "PREV_" is added to all the previous utterance's features.
+
+        Accuracy from method1: 0.7197084797265217
+        Accuracy from method2: [0.7235859645698112, 0.7229174289547505, 0.7235662324479784, 0.7233797407585214, 0.7285960131937473]
+
+    b). Same as (a), with the features "LAST_UTTERANCE" if it is the last
+        utterance of the dialog, and "SPEAKER_CHANGED" if the speaker has
+        changed and "SPEAKER_SAME" if the speaker hasn't changed.
+
+        Accuracy from method1: 0.7231981768113189
+        Accuracy from method2: [0.7290785314855337, 0.727546081259473, 0.7244124626808544, 0.7270828213320226, 0.7359690286250586]
+
+    c). Same as (b), with the length of the utterance also included as a
+        feature, with the prefix "LENGTH_" added to it.
+        Even when the prefix "LENGTH_" was not added, and just the length of
+        the utterance was added to the feature list, it gave the same results.
+
+        Accuracy from method1: 0.7251448105593011
+        Accuracy from method2: [0.730790465445642, 0.7328493822412384, 0.7310971450842834, 0.7327577652078991, 0.7347734631656071]
+
+    d). Same as (c), but add "QUESTION" to the feature list if there is a
+        question mark in the utterance.
+
+        Accuracy from method1: 0.7263317823568513
+        Accuracy from method2: [0.7304005315110099, 0.7212463723842981, 0.7323763804478918, 0.7332954853997482, 0.7358560518055315]
+
+    e). Same as (d), with the feature "MUMBLE" added to the feature list if
+        there is any incoherent text/mumble in the phone conversation.
+
+        Accuracy from method1: 0.7256433387142721
+        Accuracy from method2: [0.7356795476869266, 0.729566596444718, 0.7389844233792217, 0.7385379458824681, 0.7310623472769942]
+
+    f). Same as (e), with the verb count and noun count added as a feature.
+
+        Accuracy from method1: 0.7271151837432343
+        Accuracy from method2: [0.7343880099916736, 0.7296150419655836, 0.7329412862876878, 0.7282731052861311, 0.7295797184788859]
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+5. Accuracy of advanced features was:
+
+  Accuracy from method1: 0.7256433387142721
+  Accuracy from method2: [0.7356795476869266, 0.729566596444718, 0.7389844233792217, 0.7385379458824681, 0.7310623472769942]
+
+  As you can see, the accuracies from the k-fold cross validation method gives a better overall result.
+  The baseline to advanced tagger only had a small improvement of 0.7% using method 1 of evaluation, but
+    using method 2, it gave an improvement of approximately 1.5%.
+
+  Some other features that can be tried out as well: sentiment of that sentence,
+        tf-idf of the words, counts of the pos tags etc.
+
+--------------------------------------------------------------------------------------------------------------------------------

@@ -25,14 +25,7 @@ def sentiment_scores(sentence):
     # oject gives a sentiment dictionary.
     # which contains pos, neg, neu, and compound scores.
     sentiment_dict = sid_obj.polarity_scores(sentence)
-
-    """print("Overall sentiment dictionary is : ", sentiment_dict)
-    print("sentence was rated as ", sentiment_dict['neg']*100, "% Negative")
-    print("sentence was rated as ", sentiment_dict['neu']*100, "% Neutral")
-    print("sentence was rated as ", sentiment_dict['pos']*100, "% Positive")
-
-    print("Sentence Overall Rated As", end = " ")"""
-
+    
     # decide sentiment as positive, negative and neutral
     if sentiment_dict['compound'] >= 0.05 :
         return "POSITIVE"
@@ -50,7 +43,6 @@ global glob_previous_speaker
 #It returns a feature list using the hwole utterance
 def utterance2features(utterance):
     global glob_previous_speaker
-    #feature_list = ["SPEAKER_CHANGED", "FIRST_UTTERANCE", [TOKEN_LIST], [POS_LIST]]
     feature_list = []
 
     if glob_previous_speaker == None:
@@ -87,9 +79,6 @@ def utterance2features(utterance):
                 feature_list.append("MUMBLE")
         sentence_sentiment = sentiment_scores(sentence)
         feature_list.append(sentence_sentiment)
-
-
-
     else:
         feature_list.append("NO_WORDS")
 
@@ -105,7 +94,6 @@ def adv_utterance2features(utterance, index, prev_utterance, prev_index):
         if prev_index == 0:
             glob_previous_speaker = None
         prev_utterance_features = utterance2features(prev_utterance)
-        #prev_utterance_features = [feat for feat in prev_utterance_features if feat[:4] == "TOK_" ]
         prev_utterance_features2 = ["PREV_"+feat for feat in prev_utterance_features]
         curr_utterance_features = utterance2features(utterance)
         return curr_utterance_features + prev_utterance_features2
@@ -115,10 +103,6 @@ def adv_utterance2features(utterance, index, prev_utterance, prev_index):
 #takes the DialogUtterance as input and returns its label, which is the first element in the tuple
 def utterance2label(utterance):
     return utterance[0]
-
-
-
-
 
 
 def get_adv_features_and_labels(data_list):
@@ -141,12 +125,11 @@ def get_adv_features_and_labels(data_list):
             else:
                 dialog_feature_list.append(adv_utterance2features(dialog[i], i, dialog[i-1], i-1 ))
                 dialog_label_list.append(utterance2label(dialog[i]))
-                #print(dialog_feature_list)
-                #input()
             if i == dialog_length:
                 dialog_feature_list.append("LAST_UTTERANCE")
         feature_list.append(dialog_feature_list)
         label_list.append(dialog_label_list)
+        #Use this to keep track of the progression of the function
         if count%10 == 0:
             print(count)
     return feature_list, label_list
@@ -171,7 +154,6 @@ def build_model(x_train, y_train):
         })
 
     trainer.train('advanced_model')
-    print(len(trainer.logparser.iterations), trainer.logparser.iterations[-1])
     print("done training and saving model")
 
 
@@ -208,10 +190,7 @@ def perform_k_fold(k, x_train, y_train):
         y_training_data = [y_train[i] for i in train_indices]
         x_testing_data = [x_train[i] for i in test_indices]
         y_testing_data = [y_train[i] for i in test_indices]
-        print(len(x_training_data))
-        print(len(y_training_data))
-        print(len(x_testing_data))
-        print(len(y_testing_data))
+
 
         trainer = pycrfsuite.Trainer(verbose=False)
         for xseq, yseq in zip(x_training_data, y_training_data):
@@ -241,9 +220,7 @@ def perform_k_fold(k, x_train, y_train):
         flat_list_pred = [item for sublist in y_pred for item in sublist]
 
         acc_score = accuracy_score(flat_list_true, flat_list_pred, normalize=True, sample_weight=None)
-        print(acc_score)
         scores.append(acc_score)
-    print(scores)
 
 
 def main():
@@ -253,12 +230,7 @@ def main():
 
     train_data_list, test_data_list = get_train_test_data(train_directory, test_directory)
     x_train, y_train = get_adv_features_and_labels(train_data_list)
-    print(len(x_train))
-    print(len(y_train))
     x_test, y_test = get_adv_features_and_labels(test_data_list)
-    print(len(x_test))
-    print(len(y_test))
-
 
     build_model(x_train, y_train)
     predicted_tags = predict(x_test, y_test)

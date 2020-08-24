@@ -9,9 +9,7 @@ def get_all_data(directory_name):
 
 def get_train_test_data(train_directory, test_directory):
     train_data_list = get_all_data(train_directory)
-    print(len(train_data_list))
     test_data_list = get_all_data(test_directory)
-    print(len(test_data_list))
     return train_data_list, test_data_list
 
 global glob_previous_speaker
@@ -20,7 +18,6 @@ global glob_previous_speaker
 #It returns a feature list using the hwole utterance
 def utterance2features(utterance):
     global glob_previous_speaker
-    #feature_list = ["SPEAKER_CHANGED", "FIRST_UTTERANCE", [TOKEN_LIST], [POS_LIST]]
     feature_list = []
 
     if glob_previous_speaker == None:
@@ -124,10 +121,6 @@ def perform_k_fold(k, x_train, y_train):
         y_training_data = [y_train[i] for i in train_indices]
         x_testing_data = [x_train[i] for i in test_indices]
         y_testing_data = [y_train[i] for i in test_indices]
-        print(len(x_training_data))
-        print(len(y_training_data))
-        print(len(x_testing_data))
-        print(len(y_testing_data))
 
         trainer = pycrfsuite.Trainer(verbose=False)
         for xseq, yseq in zip(x_training_data, y_training_data):
@@ -145,7 +138,6 @@ def perform_k_fold(k, x_train, y_train):
         print("start training")
         trainer.train('baseline_model')
         print("finish training ")
-        print(len(trainer.logparser.iterations), trainer.logparser.iterations[-1])
 
         tagger = pycrfsuite.Tagger()
         tagger.open('baseline_model')
@@ -157,9 +149,7 @@ def perform_k_fold(k, x_train, y_train):
         flat_list_pred = [item for sublist in y_pred for item in sublist]
 
         acc_score = accuracy_score(flat_list_true, flat_list_pred, normalize=True, sample_weight=None)
-        print(acc_score)
         scores.append(acc_score)
-    print(scores)
 
 
 
@@ -170,11 +160,7 @@ def main():
 
     train_data_list, test_data_list = get_train_test_data(train_directory, test_directory)
     x_train, y_train = get_features_and_labels(train_data_list)
-    print(len(x_train))
-    print(len(y_train))
     x_test, y_test = get_features_and_labels(test_data_list)
-    print(len(x_test))
-    print(len(y_test))
 
     build_model(x_train, y_train)
     predicted_tags = predict(x_test, y_test)

@@ -1,4 +1,4 @@
-# Dialogue Act Tagger
+# Dialogue Act Tagger - USC CSCI544 (Applied NLP)
 Used pyCRF to create a dialog act tagger using the SWBD dataset.
 
 ### Data description
